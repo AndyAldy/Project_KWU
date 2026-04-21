@@ -1,15 +1,35 @@
+import { useState } from 'react';
+import './App.css';
 import StockManager from './components/StockManager';
+import IncomeManager from './components/IncomeManager';
+import ExpenseManager from './components/ExpenseManager';
 
 function App() {
-  return (
-    <div className="container">
-      <header style={{ textAlign: 'center', marginBottom: '40px' }}>
-        <h1 style={{ color: 'var(--primary)', marginBottom: '10px' }}>Sistem Warung Kelontong</h1>
-        <p style={{ color: '#888' }}>Pencatatan Cepat, Mudah, dan Akurat.</p>
-      </header>
+  const [view, setView] = useState('home'); // home, stock, pemasukan, pengeluaran
 
-      {/* Memanggil komponen kelola stok */}
-      <StockManager />
+  return (
+    <div className="app-wrapper">
+      {view === 'home' ? (
+        <section className="hero-section">
+          <div className="hero-content">
+            <div className="hero-badge">Selamat Datang 👋</div>
+            <h1 className="hero-title">Pencatatan Warung Kelontong</h1>
+            <p className="hero-description">Kelola stok, pemasukan, dan pengeluaran dalam satu tempat.</p>
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+              <button className="btn-catat" onClick={() => setView('stock')}>Cek Stok</button>
+              <button className="btn-catat" onClick={() => setView('pemasukan')}>Catat Jual</button>
+              <button className="btn-catat" onClick={() => setView('pengeluaran')}>Catat Beban</button>
+            </div>
+          </div>
+        </section>
+      ) : (
+        <div className="container">
+          <button className="btn-back" onClick={() => setView('home')}>← Kembali</button>
+          {view === 'stock' && <StockManager />}
+          {view === 'pemasukan' && <IncomeManager />}
+          {view === 'pengeluaran' && <ExpenseManager />}
+        </div>
+      )}
     </div>
   );
 }

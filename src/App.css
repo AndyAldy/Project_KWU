@@ -1,265 +1,175 @@
-.counter {
-  font-size: 16px;
-  padding: 5px 10px;
-  border-radius: 5px;
-  color: var(--accent);
-  background: var(--accent-bg);
-  border: 2px solid transparent;
-  transition: border-color 0.3s;
-  margin-bottom: 24px;
-
-  &:hover {
-    border-color: var(--accent-border);
-  }
-  &:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
-  }
-}
-
-.hero {
-  position: relative;
-
-  .base,
-  .framework,
-  .vite {
-    inset-inline: 0;
-    margin: 0 auto;
-  }
-
-  .base {
-    width: 170px;
-    position: relative;
-    z-index: 0;
-  }
-
-  .framework,
-  .vite {
-    position: absolute;
-  }
-
-  .framework {
-    z-index: 1;
-    top: 34px;
-    height: 28px;
-    transform: perspective(2000px) rotateZ(300deg) rotateX(44deg) rotateY(39deg)
-      scale(1.4);
-  }
-
-  .vite {
-    z-index: 0;
-    top: 107px;
-    height: 26px;
-    width: auto;
-    transform: perspective(2000px) rotateZ(300deg) rotateX(40deg) rotateY(39deg)
-      scale(0.8);
-  }
-}
-
-#center {
-  display: flex;
-  flex-direction: column;
-  gap: 25px;
-  place-content: center;
-  place-items: center;
-  flex-grow: 1;
-
-  @media (max-width: 1024px) {
-    padding: 32px 20px 24px;
-    gap: 18px;
-  }
-}
-
-#next-steps {
-  display: flex;
-  border-top: 1px solid var(--border);
-  text-align: left;
-
-  & > div {
-    flex: 1 1 0;
-    padding: 32px;
-    @media (max-width: 1024px) {
-      padding: 24px 20px;
-    }
-  }
-
-  .icon {
-    margin-bottom: 16px;
-    width: 22px;
-    height: 22px;
-  }
-
-  @media (max-width: 1024px) {
-    flex-direction: column;
-    text-align: center;
-  }
-}
-
-#docs {
-  border-right: 1px solid var(--border);
-
-  @media (max-width: 1024px) {
-    border-right: none;
-    border-bottom: 1px solid var(--border);
-  }
-}
-
-#next-steps ul {
-  list-style: none;
-  padding: 0;
-  display: flex;
-  gap: 8px;
-  margin: 32px 0 0;
-
-  .logo {
-    height: 18px;
-  }
-
-  a {
-    color: var(--text-h);
-    font-size: 16px;
-    border-radius: 6px;
-    background: var(--social-bg);
-    display: flex;
-    padding: 6px 12px;
-    align-items: center;
-    gap: 8px;
-    text-decoration: none;
-    transition: box-shadow 0.3s;
-
-    &:hover {
-      box-shadow: var(--shadow);
-    }
-    .button-icon {
-      height: 18px;
-      width: 18px;
-    }
-  }
-
-  @media (max-width: 1024px) {
-    margin-top: 20px;
-    flex-wrap: wrap;
-    justify-content: center;
-
-    li {
-      flex: 1 1 calc(50% - 8px);
-    }
-
-    a {
-      width: 100%;
-      justify-content: center;
-      box-sizing: border-box;
-    }
-  }
-}
-
-#spacer {
-  height: 88px;
-  border-top: 1px solid var(--border);
-  @media (max-width: 1024px) {
-    height: 48px;
-  }
-}
-
-.ticks {
-  position: relative;
-  width: 100%;
-
-  &::before,
-  &::after {
-    content: '';
-    position: absolute;
-    top: -4.5px;
-    border: 5px solid transparent;
-  }
-
-  &::before {
-    left: 0;
-    border-left-color: var(--border);
-  }
-  &::after {
-    right: 0;
-    border-right-color: var(--border);
-  }
-  :root {
-  --primary: #aa3bff;
-  --primary-hover: #902be6;
-  --danger: #ff4757;
-  --bg: #f4f5f7;
-  --card-bg: #ffffff;
-  --text: #2f3542;
-}
-
-body {
-  background-color: var(--bg);
-  color: var(--text);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  margin: 0;
-  padding: 20px;
-}
-
-.container {
+/* --- RESET & BASE --- */
+.app-wrapper {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   max-width: 1000px;
   margin: 0 auto;
+  padding: 40px 20px;
+  color: #334155;
 }
 
-/* Animasi Fade In */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+/* --- HERO SECTION (Atas) --- */
+.hero-section {
+  text-align: center;
+  padding: 60px 20px;
+  background: linear-gradient(145deg, #ffffff, #f8fafc);
+  border-radius: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  margin-bottom: 40px;
+  border: 1px solid #f1f5f9;
 }
 
-.card {
-  background: var(--card-bg);
-  border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 15px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  animation: fadeIn 0.4s ease-out forwards;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 15px rgba(0,0,0,0.1);
-}
-
-.btn {
-  padding: 8px 16px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
+.hero-badge {
+  display: inline-block;
+  background-color: #d1fae5;
+  color: #059669;
+  padding: 6px 16px;
+  border-radius: 50px;
+  font-size: 14px;
   font-weight: 600;
-  transition: all 0.2s;
+  margin-bottom: 20px;
 }
 
-.btn-primary { background: var(--primary); color: white; }
-.btn-primary:hover { background: var(--primary-hover); transform: scale(1.05); }
-
-.btn-danger { background: var(--danger); color: white; margin-left: 8px; }
-.btn-danger:hover { background: #e84118; transform: scale(1.05); }
-
-/* Modal Form Animasi */
-.modal-overlay {
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0,0,0,0.5);
-  display: flex; justify-content: center; align-items: center;
-  backdrop-filter: blur(4px);
-  z-index: 1000;
+.hero-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 20px 0;
+  line-height: 1.2;
 }
 
-.modal-content {
-  background: white; padding: 30px; border-radius: 12px;
-  width: 400px;
-  animation: fadeIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+.hero-description {
+  font-size: 1.1rem;
+  color: #64748b;
+  max-width: 700px;
+  margin: 0 auto 35px auto;
+  line-height: 1.7;
 }
 
-.form-group { margin-bottom: 15px; }
-.form-group input {
-  width: 100%; padding: 10px; border: 1px solid #ddd;
-  border-radius: 6px; box-sizing: border-box;
+/* Tombol Catat */
+.btn-catat {
+  background-color: #10b981;
+  color: white;
+  border: none;
+  padding: 14px 32px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
+  align-content: left;
+  text-align: left;
 }
+
+.btn-catat:hover {
+  background-color: #059669;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6);
+}
+
+.btn-catat:active {
+  transform: translateY(1px);
+}
+
+/* --- DIVIDER --- */
+.divider {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+  margin: 0 auto 40px auto;
+  width: 80%;
+}
+
+/* --- INFO SECTION (Bawah) --- */
+.info-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+}
+
+.info-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 30px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.info-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.05);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 5px;
+}
+
+.card-header h2 {
+  font-size: 1.4rem;
+  color: #0f172a;
+  margin: 0;
+}
+
+.icon-header {
+  width: 28px;
+  height: 28px;
+  fill: #6366f1; /* Warna ikon Vite bawaan */
+}
+
+.card-subtitle {
+  color: #94a3b8;
+  font-size: 0.95rem;
+  margin: 0 0 20px 0;
+}
+
+/* --- LIST & LINKS --- */
+.link-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.link-list li a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: #475569;
+  font-weight: 500;
+  padding: 10px 15px;
+  border-radius: 10px;
+  background-color: #f8fafc;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.link-list li a:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+  border-color: #e2e8f0;
+  transform: translateX(5px); /* Efek geser kanan sedikit */
+}
+
+.link-logo, .link-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.spacer {
+  height: 60px;
+}
+
+/* --- RESPONSIVE MOBILE --- */
+@media (max-width: 600px) {
+  .hero-title {
+    font-size: 2rem;
+  }
+  .info-section {
+    grid-template-columns: 1fr;
+  }
 }

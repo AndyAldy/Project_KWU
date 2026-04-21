@@ -5,14 +5,23 @@ export default function StockManager() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({ id: null, nama_barang: '', jumlah: 0, harga_jual: 0, harga_beli: 0 });
 
-  // Baca Data (Read)
-  const fetchStocks = async () => {
-    const res = await fetch('http://localhost:5000/api/stock');
-    const data = await res.json();
-    setStocks(data);
-  };
+  // 1. Ini adalah state pemicu untuk me-refresh data
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-  useEffect(() => { fetchStocks(); }, []);
+  // 2. Fungsi fetch dipindahkan ke dalam useEffect
+  useEffect(() => {
+    const fetchStocks = async () => {
+      try {
+        const res = await fetch('http://localhost:5000/api/stock');
+        const data = await res.json();
+        setStocks(data); // Aman, karena dipanggil setelah 'await'
+      } catch (error) {
+        console.error("Gagal mengambil data dari server:", error);
+      }
+    };
+
+    fetchStocks();
+  }, [refreshTrigger]); // <-- Array dependency berisi refreshTrigger, jadi setiap nilainya berubah, dia akan nge-fetch ulang.
 
   // Simpan / Edit (Create & Update)
   const handleSave = async (e) => {
@@ -20,21 +29,31 @@ export default function StockManager() {
     const url = formData.id ? `http://localhost:5000/api/stock/${formData.id}` : 'http://localhost:5000/api/stock';
     const method = formData.id ? 'PUT' : 'POST';
 
-    await fetch(url, {
-      method: method,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData)
-    });
-    
-    setIsModalOpen(false);
-    fetchStocks(); // Refresh data
+    try {
+      await fetch(url, {
+        method: method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+      
+      setIsModalOpen(false);
+      // 3. Picu refresh data dengan menambahkan angka trigger
+      setRefreshTrigger(prev => prev + 1); 
+    } catch (error) {
+      console.error("Gagal menyimpan data:", error);
+    }
   };
 
   // Hapus Data (Delete)
   const handleDelete = async (id) => {
     if(window.confirm('Yakin ingin menghapus barang ini?')) {
-      await fetch(`http://localhost:5000/api/stock/${id}`, { method: 'DELETE' });
-      fetchStocks();
+      try {
+        await fetch(`http://localhost:5000/api/stock/${id}`, { method: 'DELETE' });
+        // Picu refresh data
+        setRefreshTrigger(prev => prev + 1);
+      } catch (error) {
+        console.error("Gagal menghapus data:", error);
+      }
     }
   };
 
@@ -59,27 +78,31 @@ export default function StockManager() {
 
       {/* List Barang dengan Animasi Card */}
       <div className="stock-list">
-        {stocks.map((stock) => (
-          <div className="card" key={stock.id}>
-            <div>
-              <h3 style={{ margin: '0 0 5px 0', color: 'var(--primary)' }}>{stock.nama_barang}</h3>
-              <p style={{ margin: 0, color: '#888' }}>
-                Stok: {stock.jumlah} | Beli: Rp{stock.harga_beli} | Jual: Rp{stock.harga_jual}
-              </p>
+        {stocks.length === 0 ? (
+          <p style={{ textAlign: 'center', color: '#888' }}>Belum ada data barang.</p>
+        ) : (
+          stocks.map((stock) => (
+            <div className="card" key={stock.id}>
+              <div>
+                <h3 style={{ margin: '0 0 5px 0', color: 'var(--primary)' }}>{stock.nama_barang}</h3>
+                <p style={{ margin: 0, color: '#888' }}>
+                  Stok: {stock.jumlah} | Beli: Rp{stock.harga_beli} | Jual: Rp{stock.harga_jual}
+                </p>
+              </div>
+              <div>
+                <button className="btn btn-primary" onClick={() => openEdit(stock)}>Edit</button>
+                <button className="btn btn-danger" onClick={() => handleDelete(stock.id)}>Hapus</button>
+              </div>
             </div>
-            <div>
-              <button className="btn btn-primary" onClick={() => openEdit(stock)}>Edit</button>
-              <button className="btn btn-danger" onClick={() => handleDelete(stock.id)}>Hapus</button>
-            </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
 
       {/* Modal Form */}
       {isModalOpen && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <h3>{formData.id ? 'Edit Barang' : 'Tambah Barang'}</h3>
+            <h3 style={{ marginTop: 0 }}>{formData.id ? 'Edit Barang' : 'Tambah Barang'}</h3>
             <form onSubmit={handleSave}>
               <div className="form-group">
                 <input placeholder="Nama Barang" value={formData.nama_barang} onChange={(e) => setFormData({...formData, nama_barang: e.target.value})} required />

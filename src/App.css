@@ -4,18 +4,32 @@
 .top-navigation {
   display: flex;
   justify-content: flex-start;
-  width: 100%;
+  width: 100%; /* Pastikan ini 100% */
   margin-bottom: 20px;
 }
 
 /* Wadah untuk Judul dan Tombol Tambah */
 .page-header {
   display: flex;
-  flex-direction: column; /* Memaksa elemen berbaris dari atas ke bawah */
-  align-items: flex-start; /* Rata kiri */
-  gap: 15px; /* Jarak antara judul dan tombol */
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 15px;
   margin-bottom: 30px;
+  /* Tambahkan width 100% agar tidak melipat ke tengah */
+  width: 100%; 
+}
+
+.card-section, .card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 25px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+  transition: transform 0.2s, box-shadow 0.2s;
+  /* Tambahkan ini agar card melebar penuh mengikuti wadahnya */
   width: 100%;
+  box-sizing: border-box;
 }
 
 .page-header h2 {
@@ -27,7 +41,10 @@
 /* --- RESET & BASE --- */
 .app-wrapper {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  max-width: 1000px;
+  /* Ubah max-width menjadi lebih lebar */
+  max-width: 1200px; 
+  /* Memastikan wrapper mengisi lebar yang tersedia */
+  width: 100%; 
   margin: 0 auto;
   padding: 40px 20px;
   color: #334155;

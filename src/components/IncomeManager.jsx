@@ -4,7 +4,7 @@ import './App.css';
 export default function IncomeManager() {
   const [stocks, setStocks] = useState([]);
   const [incomes, setIncomes] = useState([]); // Variabel ini sekarang digunakan
-  const [form, setForm] = useState({ id_barang: '', jumlah_terjual: 0, total_harga: 0 });
+  const [form, setForm] = useState({ id_barang: '', jumlah_terjual: '', total_harga: '' });
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   useEffect(() => {
@@ -31,7 +31,7 @@ export default function IncomeManager() {
       alert("Penjualan dicatat dan stok telah dikurangi otomatis!");
       
       // Reset form dan refresh data tanpa reload halaman
-      setForm({ id_barang: '', jumlah_terjual: 0, total_harga: 0 });
+      setForm({ id_barang: '', jumlah_terjual: '', total_harga: '' });
       setRefreshTrigger(prev => prev + 1); 
     } catch (error) {
       console.error("Gagal menyimpan data:", error);

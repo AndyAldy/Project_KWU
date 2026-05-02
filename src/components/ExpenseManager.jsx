@@ -2,7 +2,10 @@ import { useState } from 'react';
 import './App.css';
 
 export default function ExpenseManager() {
-  const [form, setForm] = useState({ nama_pengeluaran: '', nominal: 0 });
+  const [form, setForm] = useState({ nama_pengeluaran: '', nominal: ''
+
+    
+   });
 
   const handleSubmit = async (e) => {
     e.preventDefault();

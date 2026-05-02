@@ -66,7 +66,7 @@ export default function StockManager() {
 
   // Buka form untuk tambah
   const openAdd = () => {
-    setFormData({ id: null, nama_barang: '', jumlah: 0, harga_jual: 0, harga_beli: 0 });
+    setFormData({ id: null, nama_barang: '', jumlah: '', harga_jual: '', harga_beli: '' });
     setIsModalOpen(true);
   };
 

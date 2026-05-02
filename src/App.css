@@ -1,3 +1,29 @@
+/* --- LAYOUT HEADER & NAVIGASI --- */
+
+/* Wadah untuk tombol kembali agar ke kiri */
+.top-navigation {
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+/* Wadah untuk Judul dan Tombol Tambah */
+.page-header {
+  display: flex;
+  flex-direction: column; /* Memaksa elemen berbaris dari atas ke bawah */
+  align-items: flex-start; /* Rata kiri */
+  gap: 15px; /* Jarak antara judul dan tombol */
+  margin-bottom: 30px;
+  width: 100%;
+}
+
+.page-header h2 {
+  margin: 0;
+  color: #0f172a;
+}
+
+
 /* --- RESET & BASE --- */
 .app-wrapper {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;

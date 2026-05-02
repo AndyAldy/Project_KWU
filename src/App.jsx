@@ -23,8 +23,12 @@ function App() {
           </div>
         </section>
       ) : (
-        <div className="container">
-          <button className="btn-back" onClick={() => setView('home')}>Kembali</button>
+<div className="container">
+          {/* Bungkus tombol kembali dengan div ini */}
+          <div className="top-navigation">
+            <button className="btn-back" onClick={() => setView('home')}>← Kembali</button>
+          </div>
+          
           {view === 'stock' && <StockManager />}
           {view === 'pemasukan' && <IncomeManager />}
           {view === 'pengeluaran' && <ExpenseManager />}

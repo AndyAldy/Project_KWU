@@ -74,7 +74,7 @@ export default function StockManager() {
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
         <h2>Kelola Stok Barang</h2>
-        <button className="btn btn-primary" onClick={openAdd}>+ Tambah Barang</button>
+        <button className="btn btn-primary-tambah" onClick={openAdd}>+ Tambah Barang</button>
       </div>
 
       {/* List Barang dengan Animasi Card */}

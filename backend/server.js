@@ -40,9 +40,9 @@ app.post('/api/stock', (req, res) => {
 });
 
 // UPDATE: Edit barang
-app.put('/api/stock/:id', (req, res) => {
+app.put('/api/stock/:id_stock', (req, res) => {
   const { nama_barang, jumlah, harga_jual, harga_beli } = req.body;
-  const sql = 'UPDATE stock SET nama_barang=?, jumlah=?, harga_jual=?, harga_beli=? WHERE id=?';
+  const sql = 'UPDATE stock SET nama_barang=?, jumlah=?, harga_jual=?, harga_beli=? WHERE id_stock=?';
   db.query(sql, [nama_barang, jumlah, harga_jual, harga_beli, req.params.id], (err) => {
     if (err) return res.status(500).json(err);
     res.json({ message: 'Barang berhasil diupdate!' });
@@ -51,7 +51,7 @@ app.put('/api/stock/:id', (req, res) => {
 
 // DELETE: Hapus barang
 app.delete('/api/stock/:id', (req, res) => {
-  db.query('DELETE FROM stock WHERE id=?', [req.params.id], (err) => {
+  db.query('DELETE FROM stock WHERE id_stock=?', [req.params.id], (err) => {
     if (err) return res.status(500).json(err);
     res.json({ message: 'Barang dihapus!' });
   });
@@ -72,14 +72,22 @@ app.get('/api/pemasukan', (req, res) => {
 
 app.post('/api/pemasukan', (req, res) => {
   const { id_barang, jumlah_terjual, total_harga } = req.body;
-  // Logika: Tambah data pemasukan dan kurangi stok di tabel stock
   const sqlPemasukan = 'INSERT INTO pemasukan (id_barang, jumlah_terjual, total_harga) VALUES (?, ?, ?)';
-  const sqlUpdateStock = 'UPDATE stock SET jumlah = jumlah - ? WHERE id = ?';
+  const sqlUpdateStock = 'UPDATE stock SET jumlah = jumlah - ? WHERE id_stock = ?';
 
+  // Eksekusi insert pemasukan
   db.query(sqlPemasukan, [id_barang, jumlah_terjual, total_harga], (err) => {
-    if (err) return res.status(500).json(err);
+    if (err) {
+      console.error("❌ GAGAL INSERT PEMASUKAN:", err); // Pesan error ke terminal
+      return res.status(500).json(err);
+    }
+    
+    // Jika pemasukan berhasil, eksekusi kurangi stok
     db.query(sqlUpdateStock, [jumlah_terjual, id_barang], (err2) => {
-      if (err2) return res.status(500).json(err2);
+      if (err2) {
+        console.error("❌ GAGAL UPDATE STOK:", err2); // Pesan error ke terminal
+        return res.status(500).json(err2);
+      }
       res.json({ message: 'Pemasukan berhasil dicatat dan stok diperbarui!' });
     });
   });

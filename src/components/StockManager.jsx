@@ -83,7 +83,7 @@ export default function StockManager() {
           <p style={{ textAlign: 'center', color: '#888' }}>Belum ada data barang.</p>
         ) : (
           stocks.map((stock) => (
-            <div className="card" key={stock.id}>
+            <div className="card" key={stock.id_stock}>
               <div>
                 <h3 style={{ margin: '0 0 5px 0', color: 'var(--primary)' }}>{stock.nama_barang}</h3>
                 <p style={{ margin: 0, color: '#888' }}>
@@ -92,7 +92,7 @@ export default function StockManager() {
               </div>
               <div>
                 <button className="btn btn-primary" onClick={() => openEdit(stock)}>Edit</button>
-                <button className="btn btn-danger" onClick={() => handleDelete(stock.id)}>Hapus</button>
+                <button className="btn btn-danger" onClick={() => handleDelete(stock.id_stock)}>Hapus</button>
               </div>
             </div>
           ))

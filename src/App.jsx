@@ -16,9 +16,9 @@ function App() {
             <h1 className="hero-title">Pencatatan Warung Kelontong</h1>
             <p className="hero-description">Kelola stok, pemasukan, dan pengeluaran dalam satu tempat.</p>
             <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-              <button className="btn-catat" onClick={() => setView('stock')}>Cek Stok</button>
+              <button className="btn-catat" onClick={() => setView('stock')}>Cek Stock</button>
               <button className="btn-catat" onClick={() => setView('pemasukan')}>Catat Jual</button>
-              <button className="btn-catat" onClick={() => setView('pengeluaran')}>Catat Beban</button>
+              <button className="btn-catat" onClick={() => setView('pengeluaran')}>Catat Management Toko</button>
             </div>
           </div>
         </section>

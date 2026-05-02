@@ -20,25 +20,52 @@ export default function IncomeManager() {
       .catch(err => console.error("Gagal load pemasukan:", err));
   }, [refreshTrigger]);
 
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // 1. --- VALIDASI PENCEGAH ERROR NULL ---
+    if (!form.id_barang || form.id_barang === "") {
+      alert("Peringatan: Silakan pilih barang dari dropdown terlebih dahulu!");
+      return; // Hentikan proses, jangan kirim ke database
+    }
+
+    if (form.jumlah_terjual <= 0 || form.total_harga <= 0) {
+      alert("Peringatan: Jumlah dan Total Harga harus lebih dari 0!");
+      return;
+    }
+    // ----------------------------------------
+
     try {
-      await fetch('http://localhost:5000/api/pemasukan', {
+      const dataKirim = {
+        id_barang: parseInt(form.id_barang),
+        jumlah_terjual: parseInt(form.jumlah_terjual),
+        total_harga: parseInt(form.total_harga)
+      };
+
+      const response = await fetch('http://localhost:5000/api/pemasukan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form)
+        body: JSON.stringify(dataKirim)
       });
-      alert("Penjualan dicatat dan stok telah dikurangi otomatis!");
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Detail Error dari Server:", errorData);
+        alert("Gagal mencatat penjualan! Cek Terminal Backend.");
+        return; 
+      }
+
+      alert("Berhasil! Penjualan dicatat dan stok telah dikurangi otomatis!");
       
-      // Reset form dan refresh data tanpa reload halaman
+      // Reset form dan refresh data
       setForm({ id_barang: '', jumlah_terjual: '', total_harga: '' });
       setRefreshTrigger(prev => prev + 1); 
     } catch (error) {
-      console.error("Gagal menyimpan data:", error);
+      console.error("Gagal mengirim data:", error);
+      alert("Terjadi kesalahan sistem atau jaringan.");
     }
   };
-
-  return (
+    return (
     <div>
       <div className="card" style={{ display: 'block', marginBottom: '20px' }}>
         <h3 style={{ marginTop: 0, color: 'var(--primary)' }}>Catat Penjualan</h3>
@@ -52,7 +79,7 @@ export default function IncomeManager() {
           >
             <option value="">-- Pilih Barang yang Terjual --</option>
             {stocks.map(s => (
-              <option key={s.id} value={s.id}>
+              <option key={s.id_stock} value={s.id_stock}>
                 {s.nama_barang} (Sisa: {s.jumlah}) - Rp{s.harga_jual}/pcs
               </option>
             ))}
@@ -85,17 +112,17 @@ export default function IncomeManager() {
       {incomes.length === 0 ? (
         <p style={{ color: '#888' }}>Belum ada riwayat penjualan.</p>
       ) : (
-        incomes.map((income) => (
-          <div className="card" key={income.id} style={{ display: 'block' }}>
+        incomes.map((pemasukan) => (
+          <div className="card" key={pemasukan.id_pemasukan} style={{ display: 'block' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
-                <h4 style={{ margin: '0 0 5px 0', color: '#10b981' }}>{income.nama_barang}</h4>
+                <h4 style={{ margin: '0 0 5px 0', color: '#10b981' }}>{pemasukan.nama_barang}</h4>
                 <p style={{ margin: 0, color: '#64748b', fontSize: '0.9rem' }}>
-                  Terjual: {income.jumlah_terjual} pcs | Waktu: {new Date(income.tanggal).toLocaleString('id-ID')}
+                  Terjual: {pemasukan.jumlah_terjual} pcs | Waktu: {new Date(pemasukan.tanggal).toLocaleString('id-ID').replace(/\./g, ':')}
                 </p>
               </div>
               <div style={{ fontWeight: 'bold', fontSize: '1.1rem', color: '#0f172a' }}>
-                + Rp{income.total_harga}
+                + Rp{pemasukan.total_harga}
               </div>
             </div>
           </div>

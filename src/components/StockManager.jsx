@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import './App.css';
 
 export default function StockManager() {
   const [stocks, setStocks] = useState([]);

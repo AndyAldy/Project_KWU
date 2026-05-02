@@ -59,10 +59,13 @@ app.delete('/api/stock/:id', (req, res) => {
 // --- API UNTUK PEMASUKAN ---
 app.get('/api/pemasukan', (req, res) => {
   const sql = `SELECT p.*, s.nama_barang FROM pemasukan p 
-               JOIN stock s ON p.id_barang = s.id 
+               JOIN stock s ON p.id_barang = s.id_stock
                ORDER BY p.tanggal DESC`;
   db.query(sql, (err, results) => {
-    if (err) return res.status(500).json(err);
+    if (err) { 
+      console.error("ERROR MYSQL di /api/pemasukan:", err);
+      return res.status(500).json(err);
+    }
     res.json(results);
   });
 });

@@ -24,7 +24,7 @@ function App() {
         </section>
       ) : (
         <div className="container">
-          <button className="btn-back" onClick={() => setView('home')}>← Kembali</button>
+          <button className="btn-back" onClick={() => setView('home')}>Kembali</button>
           {view === 'stock' && <StockManager />}
           {view === 'pemasukan' && <IncomeManager />}
           {view === 'pengeluaran' && <ExpenseManager />}

@@ -62,14 +62,25 @@ export default function IncomeManager() {
     }
   };
 
-  // [BARU] Fungsi Hapus Satuan (Manual)
-  const handleDelete = async (id_barang) => {
+// Fungsi Hapus Satuan (Manual)
+  const handleDelete = async (id_pemasukan) => {
     if(window.confirm('Yakin ingin menghapus riwayat penjualan ini?')) {
       try {
-        await fetch(`http://localhost:5000/api/pemasukan/${id_barang}`, { method: 'DELETE' });
+        const response = await fetch(`http://localhost:5000/api/pemasukan/${id_pemasukan}`, { 
+          method: 'DELETE' 
+        });
+
+        // TAMBAHAN DARI ANGEL: Paksa sistem menampilkan error jika server menolak
+        if (!response.ok) {
+          alert(`Gagal menghapus! Status: ${response.status}. Pastikan server.js sudah di-restart dan endpoint DELETE tersedia.`);
+          return; // Hentikan proses
+        }
+
+        // Jika berhasil, baru refresh datanya
         setRefreshTrigger(prev => prev + 1);
       } catch (error) {
         console.error("Gagal menghapus data:", error);
+        alert("Gagal menghubungi server. Apakah server menyala?");
       }
     }
   };
@@ -181,7 +192,7 @@ export default function IncomeManager() {
                   + Rp{pemasukan.total_harga}
                 </div>
                 {/* Tombol Hapus Satuan */}
-                <button className="btn btn-danger" onClick={() => handleDelete(pemasukan.id_barang)}>Hapus</button>
+                <button className="btn btn-danger" onClick={() => handleDelete(pemasukan.id_pemasukan)}>Hapus</button>
               </div>
             </div>
           </div>

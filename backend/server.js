@@ -145,9 +145,12 @@ app.get('/api/summary', (req, res) => {
   });
 
   // [BARU] DELETE: Hapus riwayat pemasukan/penjualan secara manual
-app.delete('/api/pemasukan/:id_barang', (req, res) => {
-  db.query('DELETE FROM pemasukan WHERE id_barang=?', [req.params.id_barang], (err) => {
-    if (err) return res.status(500).json(err);
+app.delete('/api/pemasukan/:id_pemasukan', (req, res) => {
+  db.query('DELETE FROM pemasukan WHERE id_pemasukan=?', [req.params.id_pemasukan], (err) => {
+    if (err) {
+      console.error("Error menghapus pemasukan:", err);
+      return res.status(500).json(err);
+    }
     res.json({ message: 'Riwayat penjualan berhasil dihapus!' });
   });
 });

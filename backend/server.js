@@ -20,8 +20,6 @@ db.connect((err) => {
 });
 
 // --- CRUD UNTUK STOCK BARANG ---
-
-// READ: Ambil semua barang
 app.get('/api/stock', (req, res) => {
   db.query('SELECT * FROM stock', (err, results) => {
     if (err) return res.status(500).json(err);
@@ -29,7 +27,6 @@ app.get('/api/stock', (req, res) => {
   });
 });
 
-// CREATE: Tambah barang
 app.post('/api/stock', (req, res) => {
   const { nama_barang, jumlah, harga_jual, harga_beli } = req.body;
   const sql = 'INSERT INTO stock (nama_barang, jumlah, harga_jual, harga_beli) VALUES (?, ?, ?, ?)';
@@ -39,7 +36,6 @@ app.post('/api/stock', (req, res) => {
   });
 });
 
-// UPDATE: Edit barang
 app.put('/api/stock/:id_stock', (req, res) => {
   const { nama_barang, jumlah, harga_jual, harga_beli } = req.body;
   const sql = 'UPDATE stock SET nama_barang=?, jumlah=?, harga_jual=?, harga_beli=? WHERE id_stock=?';
@@ -49,13 +45,14 @@ app.put('/api/stock/:id_stock', (req, res) => {
   });
 });
 
-// DELETE: Hapus barang
-app.delete('/api/stock/:id', (req, res) => {
+// Perbaikan nama parameter dari req.params.id menjadi req.params.id_stock
+app.delete('/api/stock/:id_stock', (req, res) => {
   db.query('DELETE FROM stock WHERE id_stock=?', [req.params.id_stock], (err) => {
     if (err) return res.status(500).json(err);
     res.json({ message: 'Barang dihapus!' });
   });
 });
+
 // --- API UNTUK PEMASUKAN ---
 app.get('/api/pemasukan', (req, res) => {
   const sql = `SELECT p.*, s.nama_barang FROM pemasukan p 
@@ -75,17 +72,14 @@ app.post('/api/pemasukan', (req, res) => {
   const sqlPemasukan = 'INSERT INTO pemasukan (id_barang, jumlah_terjual, total_harga) VALUES (?, ?, ?)';
   const sqlUpdateStock = 'UPDATE stock SET jumlah = jumlah - ? WHERE id_stock = ?';
 
-  // Eksekusi insert pemasukan
   db.query(sqlPemasukan, [id_barang, jumlah_terjual, total_harga], (err) => {
     if (err) {
-      console.error("❌ GAGAL INSERT PEMASUKAN:", err); // Pesan error ke terminal
+      console.error("❌ GAGAL INSERT PEMASUKAN:", err);
       return res.status(500).json(err);
     }
-    
-    // Jika pemasukan berhasil, eksekusi kurangi stok
     db.query(sqlUpdateStock, [jumlah_terjual, id_barang], (err2) => {
       if (err2) {
-        console.error("❌ GAGAL UPDATE STOK:", err2); // Pesan error ke terminal
+        console.error("❌ GAGAL UPDATE STOK:", err2);
         return res.status(500).json(err2);
       }
       res.json({ message: 'Pemasukan berhasil dicatat dan stok diperbarui!' });
@@ -110,9 +104,28 @@ app.post('/api/pengeluaran', (req, res) => {
   });
 });
 
+// [BARU] DELETE: Hapus pengeluaran satuan secara manual
+app.delete('/api/pengeluaran/:id_pengeluaran', (req, res) => {
+  db.query('DELETE FROM pengeluaran WHERE id_pengeluaran=?', [req.params.id_pengeluaran], (err) => {
+    if (err) return res.status(500).json(err);
+    res.json({ message: 'Pengeluaran berhasil dihapus!' });
+  });
+});
+
+// [BARU] DELETE: Hapus data pengeluaran yang lebih lama dari 1 bulan
+app.delete('/api/pengeluaran', (req, res) => {
+  // DATE_SUB(NOW(), INTERVAL 1 MONTH) mengambil tanggal 1 bulan yang lalu
+  const sql = 'DELETE FROM pengeluaran WHERE tanggal < DATE_SUB(NOW(), INTERVAL 1 MONTH)';
+  db.query(sql, (err, result) => {
+    if (err) return res.status(500).json(err);
+    res.json({ message: `Pembersihan berhasil! ${result.affectedRows} data lama dihapus.` });
+  });
+});
+
+// --- API SUMMARY UNTUK GRAFIK ---
 app.get('/api/summary', (req, res) => {
-  // Catatan: Pastikan kamu menyesuaikan nama tabel dan kolom dengan database MySQL kamu
-  const queryPemasukan = "SELECT SUM(total_harga) AS total_income FROM penjualan"; 
+  // Perbaikan nama tabel menjadi pemasukan (sebelumnya penjualan)
+  const queryPemasukan = "SELECT SUM(total_harga) AS total_income FROM pemasukan"; 
   const queryPengeluaran = "SELECT SUM(nominal) AS total_expense FROM pengeluaran";
 
   db.query(queryPemasukan, (err, incomeResult) => {
@@ -125,11 +138,28 @@ app.get('/api/summary', (req, res) => {
       const expense = expenseResult[0].total_expense || 0;
       
       res.json([
-        { name: 'Pemasukan', nominal: income, fill: '#4CAF50' }, // Warna hijau
-        { name: 'Pengeluaran', nominal: expense, fill: '#F44336' } // Warna merah
+        { name: 'Pemasukan', nominal: income, fill: '#4CAF50' },
+        { name: 'Pengeluaran', nominal: expense, fill: '#F44336' }
       ]);
     });
   });
+
+  // [BARU] DELETE: Hapus riwayat pemasukan/penjualan secara manual
+app.delete('/api/pemasukan/:id_barang', (req, res) => {
+  db.query('DELETE FROM pemasukan WHERE id_barang=?', [req.params.id_barang], (err) => {
+    if (err) return res.status(500).json(err);
+    res.json({ message: 'Riwayat penjualan berhasil dihapus!' });
+  });
+});
+
+// [BARU] DELETE: Hapus data pemasukan yang lebih lama dari 1 bulan
+app.delete('/api/pemasukan', (req, res) => {
+  const sql = 'DELETE FROM pemasukan WHERE tanggal < DATE_SUB(NOW(), INTERVAL 1 MONTH)';
+  db.query(sql, (err, result) => {
+    if (err) return res.status(500).json(err);
+    res.json({ message: `Pembersihan berhasil! ${result.affectedRows} data lama dihapus.` });
+  });
+});
 });
 
 app.listen(5000, () => console.log('Server berjalan di port 5000'));

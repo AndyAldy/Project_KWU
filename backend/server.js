@@ -35,7 +35,7 @@ app.post('/api/stock', (req, res) => {
   const sql = 'INSERT INTO stock (nama_barang, jumlah, harga_jual, harga_beli) VALUES (?, ?, ?, ?)';
   db.query(sql, [nama_barang, jumlah, harga_jual, harga_beli], (err, result) => {
     if (err) return res.status(500).json(err);
-    res.json({ message: 'Barang berhasil ditambah!', id: result.insertId });
+    res.json({ message: 'Barang berhasil ditambah!', id_stock: result.insertId });
   });
 });
 
@@ -43,7 +43,7 @@ app.post('/api/stock', (req, res) => {
 app.put('/api/stock/:id_stock', (req, res) => {
   const { nama_barang, jumlah, harga_jual, harga_beli } = req.body;
   const sql = 'UPDATE stock SET nama_barang=?, jumlah=?, harga_jual=?, harga_beli=? WHERE id_stock=?';
-  db.query(sql, [nama_barang, jumlah, harga_jual, harga_beli, req.params.id], (err) => {
+  db.query(sql, [nama_barang, jumlah, harga_jual, harga_beli, req.params.id_stock], (err) => {
     if (err) return res.status(500).json(err);
     res.json({ message: 'Barang berhasil diupdate!' });
   });
@@ -51,7 +51,7 @@ app.put('/api/stock/:id_stock', (req, res) => {
 
 // DELETE: Hapus barang
 app.delete('/api/stock/:id', (req, res) => {
-  db.query('DELETE FROM stock WHERE id_stock=?', [req.params.id], (err) => {
+  db.query('DELETE FROM stock WHERE id_stock=?', [req.params.id_stock], (err) => {
     if (err) return res.status(500).json(err);
     res.json({ message: 'Barang dihapus!' });
   });

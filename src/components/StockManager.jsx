@@ -4,7 +4,7 @@ import './App.css';
 export default function StockManager() {
   const [stocks, setStocks] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [formData, setFormData] = useState({ id: null, nama_barang: '', jumlah: 0, harga_jual: 0, harga_beli: 0 });
+  const [formData, setFormData] = useState({ id_stock: null, nama_barang: '', jumlah: 0, harga_jual: 0, harga_beli: 0 });
 
   // 1. Ini adalah state pemicu untuk me-refresh data
   const [refreshTrigger, setRefreshTrigger] = useState(0);
@@ -24,32 +24,41 @@ export default function StockManager() {
     fetchStocks();
   }, [refreshTrigger]); // <-- Array dependency berisi refreshTrigger, jadi setiap nilainya berubah, dia akan nge-fetch ulang.
 
-  // Simpan / Edit (Create & Update)
+// Simpan / Edit (Create & Update)
   const handleSave = async (e) => {
     e.preventDefault();
-    const url = formData.id ? `http://localhost:5000/api/stock/${formData.id}` : 'http://localhost:5000/api/stock';
-    const method = formData.id ? 'PUT' : 'POST';
+    const url = formData.id_stock ? `http://localhost:5000/api/stock/${formData.id_stock}` : 'http://localhost:5000/api/stock';
+    const method = formData.id_stock ? 'PUT' : 'POST';
 
     try {
-      await fetch(url, {
+      const response = await fetch(url, {
         method: method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
       });
       
+      // TAMBAHAN DARI ANGEL: Cek apakah respons dari backend benar-benar sukses
+      if (!response.ok) {
+        const errorMessage = await response.text();
+        console.error("Server menolak request:", errorMessage);
+        alert(`Gagal menyimpan! Status Error: ${response.status}. Cek Console (F12) untuk detailnya.`);
+        return; // Hentikan eksekusi di sini, jangan tutup modal
+      }
+      
+      // Jika lolos dari pengecekan di atas, berarti sukses
       setIsModalOpen(false);
-      // 3. Picu refresh data dengan menambahkan angka trigger
       setRefreshTrigger(prev => prev + 1); 
     } catch (error) {
-      console.error("Gagal menyimpan data:", error);
+      console.error("Gagal melakukan request (Server mati / masalah jaringan):", error);
+      alert("Gagal menghubungi server!");
     }
   };
 
   // Hapus Data (Delete)
-  const handleDelete = async (id) => {
+  const handleDelete = async (id_stock) => {
     if(window.confirm('Yakin ingin menghapus barang ini?')) {
       try {
-        await fetch(`http://localhost:5000/api/stock/${id}`, { method: 'DELETE' });
+        await fetch(`http://localhost:5000/api/stock/${id_stock}`, { method: 'DELETE' });
         // Picu refresh data
         setRefreshTrigger(prev => prev + 1);
       } catch (error) {
@@ -66,7 +75,7 @@ export default function StockManager() {
 
   // Buka form untuk tambah
   const openAdd = () => {
-    setFormData({ id: null, nama_barang: '', jumlah: '', harga_jual: '', harga_beli: '' });
+    setFormData({ id_stock: null, nama_barang: '', jumlah: '', harga_jual: '', harga_beli: '' });
     setIsModalOpen(true);
   };
 
@@ -103,25 +112,51 @@ export default function StockManager() {
       {isModalOpen && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <h3 style={{ marginTop: 0 }}>{formData.id ? 'Edit Barang' : 'Tambah Barang'}</h3>
-            <form onSubmit={handleSave}>
-              <div className="form-group">
-                <input placeholder="Nama Barang" value={formData.nama_barang} onChange={(e) => setFormData({...formData, nama_barang: e.target.value})} required />
-              </div>
-              <div className="form-group">
-                <input type="number" placeholder="Jumlah Stok" value={formData.jumlah} onChange={(e) => setFormData({...formData, jumlah: e.target.value})} required />
-              </div>
-              <div className="form-group">
-                <input type="number" placeholder="Harga Beli" value={formData.harga_beli} onChange={(e) => setFormData({...formData, harga_beli: e.target.value})} required />
-              </div>
-              <div className="form-group">
-                <input type="number" placeholder="Harga Jual" value={formData.harga_jual} onChange={(e) => setFormData({...formData, harga_jual: e.target.value})} required />
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-                <button type="button" className="btn btn-danger" onClick={() => setIsModalOpen(false)}>Batal</button>
-                <button type="submit" className="btn btn-primary">Simpan</button>
-              </div>
-            </form>
+            <h3 style={{ marginTop: 0 }}>{formData.id_stock ? 'Edit Barang' : 'Tambah Barang'}</h3>
+<form onSubmit={handleSave}>
+  <div className="form-group">
+    <input 
+      placeholder="Nama Barang" 
+      value={formData.nama_barang} 
+      onChange={(e) => setFormData({...formData, nama_barang: e.target.value})} 
+      required 
+    />
+  </div>
+  <div className="form-group">
+    <input 
+      type="number" 
+      placeholder="Jumlah Stok" 
+      value={formData.jumlah} 
+      // Tambahkan Number() di sini
+      onChange={(e) => setFormData({...formData, jumlah: Number(e.target.value)})} 
+      required 
+    />
+  </div>
+  <div className="form-group">
+    <input 
+      type="number" 
+      placeholder="Harga Beli" 
+      value={formData.harga_beli} 
+      // Tambahkan Number() di sini
+      onChange={(e) => setFormData({...formData, harga_beli: Number(e.target.value)})} 
+      required 
+    />
+  </div>
+  <div className="form-group">
+    <input 
+      type="number" 
+      placeholder="Harga Jual" 
+      value={formData.harga_jual} 
+      // Tambahkan Number() di sini
+      onChange={(e) => setFormData({...formData, harga_jual: Number(e.target.value)})} 
+      required 
+    />
+  </div>
+  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+    <button type="button" className="btn btn-danger" onClick={() => setIsModalOpen(false)}>Batal</button>
+    <button type="submit" className="btn btn-primary">Simpan</button>
+  </div>
+</form>
           </div>
         </div>
       )}

@@ -1,32 +1,66 @@
 import { useState } from 'react';
-import './App.css';
 
 export default function ExpenseManager() {
-  const [form, setForm] = useState({ nama_pengeluaran: '', nominal: ''
+  const [formData, setFormData] = useState({
+    nama_pengeluaran: '',
+    nominal: 0,
+    tanggal: new Date().toISOString().split('T')[0] // Default hari ini
+  });
 
-    
-   });
-
-  const handleSubmit = async (e) => {
+  const handleSaveExpense = async (e) => {
     e.preventDefault();
-    await fetch('http://localhost:5000/api/pengeluaran', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form)
-    });
-    alert("Pengeluaran dicatat!");
-    setForm({ nama_pengeluaran: '', nominal: 0 });
+    try {
+      const response = await fetch('http://localhost:5000/api/pengeluaran', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...formData,
+          nominal: Number(formData.nominal) // Pastikan nominal berupa angka
+        })
+      });
+
+      if (!response.ok) throw new Error("Gagal menyimpan data");
+      
+      alert("Pengeluaran berhasil dicatat!");
+      // Reset form setelah sukses
+      setFormData({ nama_pengeluaran: '', nominal: 0, tanggal: new Date().toISOString().split('T')[0] });
+    } catch (error) {
+      console.error(error);
+      alert("Terjadi kesalahan saat menyimpan pengeluaran.");
+    }
   };
 
   return (
-    <div className="card-section">
-      <h3>Catat Pengeluaran</h3>
-      <form onSubmit={handleSubmit}>
-        <input placeholder="Nama Pengeluaran (Contoh: Listrik)" value={form.nama_pengeluaran} 
-               onChange={(e) => setForm({...form, nama_pengeluaran: e.target.value})} />
-        <input type="number" placeholder="Nominal (Rp)" value={form.nominal}
-               onChange={(e) => setForm({...form, nominal: e.target.value})} />
-        <button type="submit" className="btn-catat">Simpan Pengeluaran</button>
+    <div className="expense-manager">
+      <h2>Catat Pengeluaran Toko</h2>
+      <form onSubmit={handleSaveExpense}>
+        <div className="form-group">
+          <input 
+            type="text" 
+            placeholder="Nama/Keterangan Pengeluaran" 
+            value={formData.nama_pengeluaran} 
+            onChange={(e) => setFormData({...formData, nama_pengeluaran: e.target.value})} 
+            required 
+          />
+        </div>
+        <div className="form-group">
+          <input 
+            type="number" 
+            placeholder="Nominal (Rp)" 
+            value={formData.nominal} 
+            onChange={(e) => setFormData({...formData, nominal: e.target.value})} 
+            required 
+          />
+        </div>
+        <div className="form-group">
+          <input 
+            type="date" 
+            value={formData.tanggal} 
+            onChange={(e) => setFormData({...formData, tanggal: e.target.value})} 
+            required 
+          />
+        </div>
+        <button type="submit" className="btn btn-primary">Simpan Pengeluaran</button>
       </form>
     </div>
   );

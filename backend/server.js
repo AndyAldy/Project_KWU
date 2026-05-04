@@ -110,4 +110,26 @@ app.post('/api/pengeluaran', (req, res) => {
   });
 });
 
+app.get('/api/summary', (req, res) => {
+  // Catatan: Pastikan kamu menyesuaikan nama tabel dan kolom dengan database MySQL kamu
+  const queryPemasukan = "SELECT SUM(total_harga) AS total_income FROM penjualan"; 
+  const queryPengeluaran = "SELECT SUM(nominal) AS total_expense FROM pengeluaran";
+
+  db.query(queryPemasukan, (err, incomeResult) => {
+    if (err) return res.status(500).send(err);
+    
+    db.query(queryPengeluaran, (err, expenseResult) => {
+      if (err) return res.status(500).send(err);
+      
+      const income = incomeResult[0].total_income || 0;
+      const expense = expenseResult[0].total_expense || 0;
+      
+      res.json([
+        { name: 'Pemasukan', nominal: income, fill: '#4CAF50' }, // Warna hijau
+        { name: 'Pengeluaran', nominal: expense, fill: '#F44336' } // Warna merah
+      ]);
+    });
+  });
+});
+
 app.listen(5000, () => console.log('Server berjalan di port 5000'));
